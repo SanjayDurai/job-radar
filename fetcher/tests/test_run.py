@@ -80,3 +80,29 @@ def test_job_key_falls_back_to_normalized_url():
     p = JobPosting(external_id="", title="x", url="https://Acme.example/jobs/9/?utm=1#apply")
     assert job_key(p) == "https://acme.example/jobs/9"
     assert normalize_url("https://A.com/x/") == "https://a.com/x"
+
+
+def test_job_without_location_is_skipped_when_detail_fetch_fails(monkeypatch):
+    """A rate-limited detail page must not leave a location-less job stored as a match."""
+    from radar.adapters.base import Adapter
+    from radar.http import FetchError
+    from radar.run import fetch_company
+
+    class Flaky(Adapter):
+        source_type = "flaky"
+        needs_description_fetch = True
+
+        def list_jobs(self, cfg, ctx):
+            return [
+                JobPosting(external_id="a", title="ML Engineer", url="https://x/a", location=None),
+                JobPosting(external_id="b", title="ML Engineer", url="https://x/b", location="Chennai, India"),
+            ]
+
+        def fetch_description(self, job, cfg, ctx):
+            raise FetchError("HTTP 429")
+
+    monkeypatch.setattr("radar.run.get_adapter", lambda st: Flaky())
+    company = {"id": 1, "slug": "acme", "region": "chennai", "country": "India", "source_type": "flaky", "source_config": {}}
+    res = fetch_company(company, client=None, known_with_description=set())
+    assert res.status == "ok"
+    assert [p.external_id for p, _ in res.matched] == ["b"]  # 'a' retried next run; 'b' kept (location known)

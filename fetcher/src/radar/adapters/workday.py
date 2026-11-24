@@ -38,6 +38,8 @@ class Workday(Adapter):
         return f"https://{cfg['host']}/wday/cxs/{cfg['tenant']}/{cfg['site']}"
 
     def list_jobs(self, cfg: dict[str, Any], ctx: FetchContext) -> list[JobPosting]:
+        # Workday rate-limits shared cloud IPs (GitHub runners) quickly: go a bit slower than default
+        ctx.client.set_host_interval(cfg["host"], float(cfg.get("min_interval", 2.0)))
         url = self._base(cfg) + "/jobs"
         terms = cfg.get("search_terms") or ctx.search_terms
         max_per_term = int(cfg.get("max_per_term", 200))

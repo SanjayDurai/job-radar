@@ -99,6 +99,10 @@ def fetch_company(company: dict[str, Any], client: PoliteClient, known_with_desc
                     p.description = adapter.fetch_description(p, cfg, ctx)
                 except Exception as e:  # one bad detail page shouldn't fail the company
                     log.warning("%s: description fetch failed for %s: %s", company["slug"], p.url, e)
+                    if not had_location:
+                        # No location and no description: we can't tell if it fits. Skip it this run;
+                        # it is retried tomorrow (e.g. after a rate limit) instead of stored half-empty.
+                        continue
                 # HTML sources often reveal the location only on the detail page: check it now.
                 # If even the page has no structured location, use the top of the description,
                 # where career pages normally state it.
