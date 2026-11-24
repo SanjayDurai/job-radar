@@ -4,20 +4,30 @@ export function scoreTone(score: number): "high" | "mid" | "low" {
   return score >= 70 ? "high" : score >= 50 ? "mid" : "low";
 }
 
+// The server (Vercel) runs in UTC, so every date is shown explicitly in India time.
+export const TIME_ZONE = "Asia/Kolkata";
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+const istDay = (ms: number) => Math.floor((ms + IST_OFFSET_MS) / 86_400_000);
+
 export function relativeDays(d: Date | string | null | undefined): string {
   if (!d) return "";
   const date = typeof d === "string" ? new Date(d) : d;
-  const days = Math.floor((Date.now() - date.getTime()) / 86_400_000);
+  const days = istDay(Date.now()) - istDay(date.getTime()); // calendar days in IST
   if (days <= 0) return "today";
   if (days === 1) return "yesterday";
   if (days < 30) return `${days} days ago`;
-  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: TIME_ZONE });
 }
 
 export function shortDate(d: Date | string | null | undefined): string {
   if (!d) return "";
-  const date = typeof d === "string" ? new Date(d) : d;
-  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  // A bare "YYYY-MM-DD" (applied date) is a calendar date: don't shift it across time zones
+  const date = typeof d === "string" ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T12:00:00+05:30` : d) : d;
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: TIME_ZONE });
+}
+
+export function timeOfDay(d: Date): string {
+  return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: TIME_ZONE });
 }
 
 export function locationText(location: string | null, locations: string[] | null): string {

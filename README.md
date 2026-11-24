@@ -13,29 +13,20 @@ GitHub Actions (daily 06:30 IST)                 Vercel (Singapore)
 
 ---
 
-## 1. Finish the deployment (one time, ~10 minutes)
+## 1. Where everything lives
 
-The database (Neon) is set up and already holds all jobs. Two copy-paste steps are left, because they
-need you signed in. The values are prepared for you in two **git-ignored** files in this folder:
-`github-secrets.env` and `vercel.env`. Open them in Notepad.
+| Piece | Where | Notes |
+|---|---|---|
+| Dashboard | **https://job-radar-theta-two.vercel.app** | Vercel project `job-radar` (Hobby, region Singapore). Every push to `main` redeploys it. |
+| Daily fetch | GitHub Actions → **Daily job radar** | 06:30 IST every day; also "Run workflow" by hand. Secrets: `DATABASE_URL`, `GROQ_API_KEY`. |
+| Database | Neon project `job-radar` (Singapore) | Connection string in `.env` as `NEON_DATABASE_URL` (git-ignored). |
+| Dashboard settings | Vercel → job-radar → Settings → Environment Variables | `DATABASE_URL`, `DASHBOARD_PASSWORD`, `SESSION_SECRET`, `GITHUB_REPO` (local copy: `vercel.env`, git-ignored) |
 
-### a) GitHub: add 2 secrets (lets the daily run write to the database)
-1. Open https://github.com/SanjayDurai/job-radar/settings/secrets/actions
-2. **New repository secret** → Name `DATABASE_URL`, Secret: the line under `# Name: DATABASE_URL` in `github-secrets.env` → **Add secret**.
-3. Again for `GROQ_API_KEY` (the line under `# Name: GROQ_API_KEY`).
-4. Test it: **Actions** tab → **Daily job radar** → **Run workflow** → **Run workflow**. It takes about 15–20 minutes; a green tick means it worked.
+**Change your password:** edit `DASHBOARD_PASSWORD` in Vercel's Environment Variables, then Deployments → ⋯ → **Redeploy**.
+(Or update `vercel.env` and run `npx vercel env add DASHBOARD_PASSWORD production --force` from `web/`, then redeploy.)
+Changing `SESSION_SECRET` signs everyone out.
 
-### b) Vercel: deploy the dashboard
-1. Go to https://vercel.com/new and sign in (GitHub sign-in is easiest).
-2. Next to **job-radar**, click **Import**. (If it isn't listed: **Adjust GitHub App Permissions** → give Vercel access to `job-radar`.)
-3. **Root Directory**: click **Edit** → choose **`web`**. Framework is detected as Next.js.
-4. Open **Environment Variables**, copy *all* lines of `vercel.env` (Ctrl+A, Ctrl+C) and paste them into the first **Key** box. Vercel splits them into separate variables.
-5. Click **Deploy**. After ~2 minutes you get a URL like `https://job-radar-xxxx.vercel.app`. That's your dashboard.
-6. Sign in with the `DASHBOARD_PASSWORD` from `vercel.env`. (Change it any time in Vercel → Project → Settings → Environment Variables, then **Redeploy**.)
-
-From then on, every `git push` to `main` redeploys the dashboard automatically.
-
-### c) Optional: make the "Run now" button work
+### Optional: make the "Run now" button work
 1. https://github.com/settings/personal-access-tokens/new → *Fine-grained token*.
 2. Name `job-radar run now`, expiration 1 year, **Repository access: Only select repositories → job-radar**.
 3. **Permissions → Repository permissions → Actions: Read and write**. Generate and copy the token.
@@ -45,7 +36,8 @@ From then on, every `git push` to `main` redeploys the dashboard automatically.
 
 ## 2. Daily use (5–10 minutes a morning)
 
-The run finishes around **06:45–07:00 IST**. On your phone or laptop, open the dashboard.
+The run finishes around **06:45–07:00 IST**. On your phone or laptop, open
+**https://job-radar-theta-two.vercel.app** (tip: on your phone, use *Add to Home screen* so it opens like an app).
 
 1. **Glance at the strip at the top**: *new today*, *open matches*, *applied this week*, *companies failing*.
 2. **Today**: unseen matches, best first. For each card:
@@ -124,10 +116,10 @@ No card is attached anywhere, so nothing can be charged. If a limit is reached, 
 
 | Symptom | Fix |
 |---|---|
-| Daily run shows a red ✗ in Actions | Open the run log. "DATABASE_URL is not set" means a missing secret (1a). Otherwise the last step shows which company failed; one bad company never stops the others. |
+| Daily run shows a red ✗ in Actions | Open the run log. "DATABASE_URL is not set" means a missing secret (GitHub → Settings → Secrets and variables → Actions). Otherwise the last step shows which company failed; one bad company never stops the others. |
 | A company shows **Failing** | Its site changed. `radar try <slug>` to see the error, then fix its entry (section 3). |
-| Dashboard says "DATABASE_URL is not set" | Add the env vars in Vercel (1b) and redeploy. |
-| "Run now isn't set up yet" | Add `GITHUB_TOKEN` (1c). |
+| Dashboard says "DATABASE_URL is not set" | Check the env vars in Vercel → Settings → Environment Variables, then redeploy. |
+| "Run now isn't set up yet" | Add `GITHUB_TOKEN` (section 1, "Run now"). |
 | No AI review on some jobs | The LLM reviews up to 60 of the best new jobs per run; the rest get reviewed on later runs. |
 | Groq model removed | `python -m uv run radar llm-models` lists current ones; set `llm.model` in `config/scoring.yaml`. |
 | Forgot the dashboard password | It's in Vercel → Settings → Environment Variables (and in `vercel.env`). |

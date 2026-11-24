@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { RunNowButton } from "@/components/run-now";
-import { relativeDays } from "@/lib/format";
+import { relativeDays, timeOfDay } from "@/lib/format";
 import { getStats } from "@/lib/data";
 
 function Stat({ value, label, href, alert }: { value: number; label: string; href: string; alert?: boolean }) {
@@ -17,7 +17,7 @@ export async function StatsStrip() {
   const s = await getStats();
   const run = s.lastRun;
   const runText = run
-    ? `Last run ${relativeDays(run.startedAt)} at ${run.startedAt.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}${run.status === "ok" ? "" : `, ${run.status}`}`
+    ? `Last run ${relativeDays(run.startedAt)} at ${timeOfDay(run.startedAt)}${run.status === "ok" ? "" : `, ${run.status}`}`
     : "No runs yet";
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
