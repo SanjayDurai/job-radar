@@ -1,0 +1,22 @@
+{
+ "items": [
+  {
+   "TotalJobsCount": 1,
+   "requisitionList": [
+    {
+     "Id": "300123",
+     "Title": "Machine Learning Engineer",
+     "PostedDate": "2026-11-19",
+     "PrimaryLocation": "Mumbai, Maharashtra, India",
+     "PrimaryLocationCountry": "IN",
+     "ShortDescriptionStr": "ML for payments",
+     "secondaryLocations": [
+      {
+       "Name": "Bengaluru, Karnataka, India"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

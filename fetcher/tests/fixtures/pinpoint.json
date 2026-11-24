@@ -1,0 +1,20 @@
+{
+ "data": [
+  {
+   "id": 77,
+   "title": "Data Scientist",
+   "url": "https://tabby.pinpointhq.com/postings/77",
+   "location": {
+    "name": "Dubai",
+    "city": "Dubai"
+   },
+   "workplace_type": "onsite",
+   "employment_type_text": "Full Time",
+   "description": "<p>Credit risk models.</p>",
+   "compensation_minimum": "25000",
+   "compensation_maximum": "35000",
+   "compensation_currency": "AED",
+   "compensation_frequency": "month"
+  }
+ ]
+}

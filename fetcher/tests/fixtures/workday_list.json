@@ -1,0 +1,17 @@
+{
+ "total": 2,
+ "jobPostings": [
+  {
+   "title": "Software Engineer II - AI",
+   "externalPath": "/job/Bengaluru/Software-Engineer-II---AI_R-123",
+   "locationsText": "Bengaluru, India",
+   "postedOn": "Posted 3 Days Ago"
+  },
+  {
+   "title": "Data Scientist",
+   "externalPath": "/job/Chennai/Data-Scientist_R-456",
+   "locationsText": "2 Locations",
+   "postedOn": "Posted Today"
+  }
+ ]
+}

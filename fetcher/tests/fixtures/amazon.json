@@ -1,0 +1,17 @@
+{
+ "hits": 1,
+ "jobs": [
+  {
+   "id_icims": "3123456",
+   "title": "Applied Scientist I, Alexa AI",
+   "job_path": "/en/jobs/3123456/applied-scientist-i-alexa-ai",
+   "normalized_location": "Chennai, Tamil Nadu, IND",
+   "country_code": "IND",
+   "job_category": "Machine Learning Science",
+   "posted_date": "November 20, 2026",
+   "description": "Work on LLMs.<br/>",
+   "basic_qualifications": "- Experience with Python",
+   "preferred_qualifications": "- PhD"
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+# How jobs are scored. Every number here shows up as a reason on the dashboard, so tune freely
+# and re-run `radar score` (rule scores are recomputed for all open jobs on every run).
+
+# --- Layer 1: rule score (0-100, always on) ------------------------------------------------------
+rule_points:
+  title_ai: 35                 # AI/ML/GenAI/LLM/Data Scientist... in the title
+  title_generic: 18            # plain "Software Engineer" / "SDE" title
+  generic_with_ai_description: 8   # generic title, but the description is clearly AI/ML work
+  skills_max: 20               # cap for skill keywords found in the description (see skill_terms)
+  # Years asked vs YOUR experience (computed from career_start, so this stays right as you grow):
+  # gap = years asked - your years. First row whose max_gap fits wins; bigger gaps get 0.
+  years_fit:
+    - {max_gap: 0.5, points: 20}   # asks about what you have (e.g. "1+ years")
+    - {max_gap: 1.0, points: 17}   # "2+ years"
+    - {max_gap: 2.0, points: 12}   # "3+ years" — a stretch
+    - {max_gap: 3.0, points: 5}    # "4 years" — a big stretch
+  years_unknown: 10
+  entry_level_hint: 5          # I / II / Associate / Early career / New grad in title
+  location_match: 10           # location fits the company's Region rule
+  location_unknown: 4          # posting doesn't say where
+  chennai_bonus: 5             # Chennai company AND the job is in Chennai
+  visa_sponsorship: 10         # abroad: mentions visa sponsorship / relocation support
+  right_to_work_required: -15  # abroad: "must have the right to work", "no sponsorship"
+  phd_required: -8
+
+# Skill keywords looked for in the description: regex -> points
+skill_terms:
+  "\\bpython\\b": 4
+  "\\bllms?\\b|large language model": 4
+  "gen ?ai|generative ai": 4
+  "agentic|ai agents?|multi-agent|\\bagents?\\b": 3
+  "\\brag\\b|retrieval[- ]augmented": 2
+  "langchain|llamaindex|langgraph|crewai|autogen": 2
+  "machine learning|\\bml\\b": 3
+  "\\bsql\\b": 2
+  "aws|lambda|serverless": 2
+  "automation|automate": 2
+  "prompt engineering|prompting": 2
+  "\\bnlp\\b|natural language": 2
+  "pytorch|tensorflow|hugging ?face|transformers": 2
+
+exclude_if_years_at_least: 5   # "5+ years" => excluded (kept in DB, hidden on the dashboard)
+
+priority_boost:                # added after blending
+  1: 8                         # P1 Dream
+  2: 4                         # P2 Strong
+  3: 0                         # P3 Good
+
+below_pay_bar_multiplier: 0.4  # job stays visible, flagged "below pay bar"
+
+# Static currency -> INR rates. Edit when they drift; no API calls needed.
+fx_to_inr:
+  INR: 1
+  USD: 88
+  EUR: 102
+  GBP: 117
+  AED: 24
+  SGD: 68
+  CAD: 63
+  AUD: 57
+  JPY: 0.58
+  THB: 2.6
+  CHF: 110
+  PKR: 0.31
+
+# --- Layer 2: LLM fit score (optional) -----------------------------------------------------------
+llm:
+  provider: groq               # groq | none   (env LLM_PROVIDER overrides; no GROQ_API_KEY => off)
+  # Free tier (checked Nov 2026): 1,000 requests/day and 8,000 tokens/min per model; one job ≈ 1,200-1,800 tokens.
+  # Other free options: openai/gpt-oss-20b, qwen/qwen3.8-27b  (list them with `radar llm-models`)
+  model: openai/gpt-oss-120b
+  reasoning_effort: low        # gpt-oss models only: keeps token use (and the per-minute budget) low
+  max_calls_per_run: 60        # env LLM_MAX_CALLS_PER_RUN overrides (60 × 10 s ≈ 10 min of the daily run)
+  min_rule_score: 55           # only jobs at least this good by rules go to the LLM (best first)
+  max_description_chars: 4000
+  min_seconds_between_calls: 10    # ~6 calls/min stays under 8,000 tokens/min
+
+final_blend:
+  rule_weight: 0.45
+  llm_weight: 0.55             # used only when an LLM score exists; otherwise final = rule score
+
+# --- Dashboard thresholds -------------------------------------------------------------------------
+new_match_min_score: 50        # a new job counts as a "new match" (stats, Today view) at this score

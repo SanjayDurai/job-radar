@@ -1,0 +1,14 @@
+# Local development database only. Production uses Neon.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: radar
+      POSTGRES_PASSWORD: radar
+      POSTGRES_DB: radar
+    ports:
+      - "5433:5432"   # 5433 so it doesn't clash with a locally installed Postgres
+    volumes:
+      - radar_pg:/var/lib/postgresql/data
+volumes:
+  radar_pg:

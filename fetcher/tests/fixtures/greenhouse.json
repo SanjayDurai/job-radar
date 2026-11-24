@@ -1,0 +1,25 @@
+{
+ "jobs": [
+  {
+   "id": 4011,
+   "title": "Machine Learning Engineer ",
+   "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/4011",
+   "location": {
+    "name": "Chennai, India"
+   },
+   "offices": [
+    {
+     "name": "Chennai",
+     "location": "Chennai, Tamil Nadu, India"
+    }
+   ],
+   "departments": [
+    {
+     "name": "AI Platform"
+    }
+   ],
+   "first_published": "2026-11-20T10:00:00-05:00",
+   "content": "&lt;p&gt;Build LLM features.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;2+ years Python&lt;/li&gt;&lt;/ul&gt;"
+  }
+ ]
+}

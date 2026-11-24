@@ -1,0 +1,96 @@
+# Who I am and what I'm looking for. Used by filtering (Phase 3) and LLM scoring.
+name_for_prompts: "the candidate"
+career_start: 2025-08          # experience is computed from this, so it stays correct over time
+current_role: "Systems Engineer at TCS Chennai (AI automation engineer, Toyota Motors North America project). First company."
+
+skills:
+  - Python
+  - GenAI / LLMs
+  - AI/ML
+  - Agentic AI
+  - SQL
+  - AWS Lambda
+  - Automation
+
+# Title must contain at least one of these (case-insensitive, word-ish match)
+target_title_keywords:
+  - ai engineer
+  - ml engineer
+  - machine learning
+  - genai
+  - generative ai
+  - llm
+  - agentic
+  - ai agent
+  - applied scientist
+  - applied ai
+  - data scientist
+  - mlops
+  - ai automation
+  - python engineer
+  - python developer
+  - software engineer        # accepted, but scored lower unless AI/ML appears in title or description
+  - software development engineer
+  - sde
+
+# Any of these in the title => excluded
+exclude_title_keywords:
+  - senior
+  - sr.
+  - sr
+  - staff
+  - principal
+  - lead
+  - manager
+  - director
+  - head
+  - architect
+  - vp
+  - vice president
+  - intern
+  - internship
+  - apprentice
+  - distinguished
+  - fellow
+
+# Non-engineering functions => excluded
+exclude_functions:
+  - sales
+  - marketing
+  - legal
+  - recruiter
+  - recruiting
+  - talent acquisition
+  - human resources
+  - hr
+  - finance
+  - accountant
+  - operations
+  - customer success
+  - account executive
+  - business development
+
+# Phrases that mean the job is restricted to citizens/nationals => excluded
+citizenship_restrictions:
+  - uae national
+  - emirati
+  - emiratisation
+  - emiratization
+  - us citizen
+  - u.s. citizen
+  - citizens only
+  - security clearance
+  - singapore citizen
+  - saudi national
+
+experience:
+  max_years_ok: 3              # "0-3", "2-4", "3+" are fine
+  hard_exclude_years: 5        # "5+ years" => excluded
+
+# Minimum pay in ₹ LPA per region (matches the "Your Min Ask" column in the sheet)
+pay_floor_lpa:
+  chennai: 15
+  india_remote: 15
+  remote_global: 15
+  india_other: 20
+  abroad: 30

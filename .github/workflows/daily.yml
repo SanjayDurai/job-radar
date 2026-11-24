@@ -1,0 +1,60 @@
+name: Daily job radar
+
+on:
+  schedule:
+    - cron: "0 1 * * *" # 01:00 UTC = 06:30 IST (GitHub may start scheduled runs a few minutes late)
+  workflow_dispatch: # the dashboard's "Run now" button, or Actions → Run workflow
+    inputs:
+      trigger:
+        description: "Recorded on the run (manual | schedule)"
+        required: false
+        default: manual
+
+# Never run two fetches at once (e.g. "Run now" pressed during the scheduled run)
+concurrency:
+  group: daily-radar
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: fetcher
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: fetcher/uv.lock
+
+      - name: Install fetcher
+        run: uv sync --frozen --no-dev
+
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('fetcher/uv.lock') }}
+
+      - name: Install Chromium for browser-based sites
+        run: uv run playwright install --with-deps chromium
+
+      - name: Apply database migrations
+        run: uv run radar db-upgrade
+
+      - name: Sync companies from the Excel sheet + companies.yaml
+        run: uv run radar import-excel
+
+      - name: Fetch, filter and score
+        run: uv run radar run -v --trigger "${{ github.event_name == 'schedule' && 'schedule' || inputs.trigger || 'manual' }}"

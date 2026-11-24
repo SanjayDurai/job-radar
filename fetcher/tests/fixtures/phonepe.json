@@ -1,0 +1,24 @@
+{
+ "totalCount": 3,
+ "results": [
+  {
+   "status": "PUBLIC",
+   "applyUrl": null,
+   "type": "Full-time",
+   "title": "Software Engineer - ML",
+   "department": "Engineering",
+   "location": "Bengaluru",
+   "updatedAt": "/Date(1795400000000)/"
+  },
+  {
+   "status": "NOT_PUBLISHED",
+   "title": "Hidden",
+   "location": "Pune"
+  },
+  {
+   "status": "PRIVATE",
+   "title": "Private",
+   "location": "Pune"
+  }
+ ]
+}

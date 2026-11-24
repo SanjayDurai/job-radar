@@ -1,0 +1,20 @@
+{
+ "status": 200,
+ "data": {
+  "count": 1,
+  "positions": [
+   {
+    "id": 1970393557050202,
+    "name": "Software Engineer - AI",
+    "locations": [
+     "India, Karnataka, Bangalore",
+     "India, Telangana, Hyderabad"
+    ],
+    "postedTs": 1793644200,
+    "department": "CoreAI",
+    "workLocationOption": "onsite",
+    "positionUrl": "/careers/job/1970393557050202"
+   }
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "data": {
+  "jobs": {
+   "nodes": [
+    {
+     "id": "cG9zdDox",
+     "slug": "368ce2af88",
+     "title": "Machine Learning Engineer – Mercari",
+     "locations": {
+      "nodes": [
+       {
+        "slug": "roppongi"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

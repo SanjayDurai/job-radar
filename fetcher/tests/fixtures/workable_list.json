@@ -1,0 +1,27 @@
+{
+ "total": 1,
+ "nextPage": null,
+ "results": [
+  {
+   "shortcode": "ABC123",
+   "title": "ML Engineer - Open Source",
+   "remote": true,
+   "workplace": "remote",
+   "location": {
+    "country": "France",
+    "city": "Paris"
+   },
+   "locations": [
+    {
+     "country": "France",
+     "city": "Paris"
+    }
+   ],
+   "department": [
+    "Engineering"
+   ],
+   "type": "full",
+   "published": "2026-11-10T00:00:00.000Z"
+  }
+ ]
+}

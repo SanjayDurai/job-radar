@@ -1,0 +1,33 @@
+[
+ {
+  "id": "a1b2",
+  "text": "AI Engineer",
+  "hostedUrl": "https://jobs.lever.co/acme/a1b2",
+  "createdAt": 1795400000000,
+  "categories": {
+   "location": "Bangalore, Karnataka",
+   "team": "Data",
+   "commitment": "Full-time",
+   "allLocations": [
+    "Bangalore, Karnataka",
+    "Remote - India"
+   ]
+  },
+  "country": "IN",
+  "workplaceType": "hybrid",
+  "descriptionPlain": "We are building agents.",
+  "lists": [
+   {
+    "text": "Requirements",
+    "content": "<li>1-3 years experience</li>"
+   }
+  ],
+  "additionalPlain": "Visa sponsorship available.",
+  "salaryRange": {
+   "min": 2000000,
+   "max": 3000000,
+   "currency": "INR",
+   "interval": "per-year-salary"
+  }
+ }
+]
