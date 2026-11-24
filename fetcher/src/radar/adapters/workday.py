@@ -15,6 +15,10 @@ from radar.adapters.base import Adapter, FetchContext, JobPosting, html_to_text,
 PAGE = 20  # Workday rejects larger page sizes
 MULTI_LOCATION = re.compile(r"^\s*\d+\s+locations?\s*$", re.I)
 
+# Workday search is full-text and broad, so a few terms cover the target roles. Fewer requests
+# keeps us well under Workday's per-IP rate limit, which is shared across all its customers' sites.
+WORKDAY_TERMS = ["machine learning", "artificial intelligence", "data scientist", "applied scientist", "LLM", "software engineer"]
+
 
 def parse_posted_on(text: str | None, now: datetime | None = None) -> datetime | None:
     """'Posted Today' / 'Posted Yesterday' / 'Posted 3 Days Ago' / 'Posted 30+ Days Ago'."""
@@ -38,11 +42,11 @@ class Workday(Adapter):
         return f"https://{cfg['host']}/wday/cxs/{cfg['tenant']}/{cfg['site']}"
 
     def list_jobs(self, cfg: dict[str, Any], ctx: FetchContext) -> list[JobPosting]:
-        # Workday rate-limits shared cloud IPs (GitHub runners) quickly: go a bit slower than default
-        ctx.client.set_host_interval(cfg["host"], float(cfg.get("min_interval", 2.0)))
+        # Paced across ALL *.myworkdayjobs.com sites together (see radar.http.rate_bucket)
+        ctx.client.set_host_interval(cfg["host"], float(cfg.get("min_interval", 1.5)))
         url = self._base(cfg) + "/jobs"
-        terms = cfg.get("search_terms") or ctx.search_terms
-        max_per_term = int(cfg.get("max_per_term", 200))
+        terms = cfg.get("search_terms") or WORKDAY_TERMS
+        max_per_term = int(cfg.get("max_per_term", 100))
         seen: dict[str, JobPosting] = {}
         for term in terms:
             offset = 0
