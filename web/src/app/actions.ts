@@ -7,13 +7,9 @@ import { redirect } from "next/navigation";
 
 import { db } from "@/db";
 import { JOB_STATUSES, jobState, type JobStatus } from "@/db/schema";
-import { SESSION_COOKIE, createSessionToken, timingSafeEqual, verifySessionToken } from "@/lib/session";
+import { requireSession } from "@/lib/auth";
+import { SESSION_COOKIE, createSessionToken, timingSafeEqual } from "@/lib/session";
 
-// Server actions are public endpoints: check the session in each one, not only in proxy.ts.
-async function requireSession() {
-  const store = await cookies();
-  if (!(await verifySessionToken(store.get(SESSION_COOKIE)?.value))) throw new Error("Not signed in");
-}
 
 export async function login(_prev: { error?: string } | undefined, form: FormData) {
   const expected = process.env.DASHBOARD_PASSWORD ?? "";

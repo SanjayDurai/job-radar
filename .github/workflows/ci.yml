@@ -57,4 +57,5 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
       - run: npx eslint src
+      - run: npm test # resume scoring + truth-guard tests
       - run: npx next build

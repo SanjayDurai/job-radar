@@ -197,6 +197,23 @@ class CompanyRun(Base):
     created_at: Mapped[datetime] = _now_col()
 
 
+class TailoredResume(Base):
+    """A resume tailored to one job by the dashboard (generated in web/, stored here for history)."""
+
+    __tablename__ = "tailored_resumes"
+    __table_args__ = (Index("ix_tailored_resumes_job", "job_id", "id"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False)
+    created_at: Mapped[datetime] = _now_col()
+    model: Mapped[str | None] = mapped_column(String(80))
+    content: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)  # the tailored resume (same shape as master)
+    keywords: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)  # {must_have: [...], nice_to_have: [...]}
+    score_before: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    score_after: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)  # matched, missing, gaps, checks, changes
+
+
 class AppState(Base):
     __tablename__ = "app_state"
 

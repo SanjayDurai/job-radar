@@ -351,6 +351,22 @@ def coverage_cmd(samples: int = typer.Option(15, help="Sample matched jobs to pr
         console.print(f"  • [green]{company}[/green] — {title}  [dim]| {loc or '-'}[/dim]")
 
 
+@app.command("resume-upload")
+def resume_upload_cmd(file: Path = typer.Option(None, help="Path to master.yaml (default resume/master.yaml)")) -> None:
+    """Validate your master resume and store it in the database for the dashboard's 'Tailor resume'."""
+    from radar.resume import MASTER_PATH, ResumeError, load_master, upload_master
+
+    try:
+        master = load_master(file or MASTER_PATH)
+    except ResumeError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1) from e
+    with session_scope() as s:
+        bullets = upload_master(s, master)
+    n_skills = sum(len(v) for v in master["skills"].values())
+    console.print(f"[green]Master resume uploaded[/green]: {bullets} bullets, {n_skills} skills.")
+
+
 @app.command("experience")
 def experience_cmd() -> None:
     """Show my experience in years, computed from career_start in config/profile.yaml."""

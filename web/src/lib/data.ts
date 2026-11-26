@@ -4,7 +4,8 @@ import { and, asc, count, desc, eq, gte, ilike, inArray, isNull, lte, ne, notInA
 import { connection } from "next/server";
 
 import { db } from "@/db";
-import { companies, companyRuns, jobScores, jobState, jobs, runs, type JobStatus } from "@/db/schema";
+import { appState, companies, companyRuns, jobScores, jobState, jobs, runs, tailoredResumes, type JobStatus } from "@/db/schema";
+import type { MasterResume } from "@/lib/resume/types";
 
 /** A job counts as a "match" from this score up (same idea as new_match_min_score in scoring.yaml). */
 export const MATCH_MIN_SCORE = 50;
@@ -207,6 +208,42 @@ export async function getCompanies() {
     .leftJoin(matchCounts, eq(matchCounts.companyId, companies.id))
     .where(eq(companies.active, true))
     .orderBy(asc(companies.sheetNo));
+}
+
+export async function getResumeMaster(): Promise<MasterResume | null> {
+  const [row] = await db.select({ value: appState.value }).from(appState).where(eq(appState.key, "resume_master"));
+  const m = row?.value as (Omit<MasterResume, "skills"> & { skills: MasterResume["skills"] | Record<string, string[]> }) | undefined;
+  if (!m) return null;
+  // Older uploads stored skills as an object (whose key order JSONB doesn't keep)
+  const skills = Array.isArray(m.skills) ? m.skills : Object.entries(m.skills).map(([group, items]) => ({ group, items }));
+  return { ...m, skills };
+}
+
+/** Tailored resumes for a job, newest first (content omitted: only needed for downloads). */
+export async function getTailoredResumes(jobId: number) {
+  await connection();
+  return db
+    .select({
+      id: tailoredResumes.id,
+      createdAt: tailoredResumes.createdAt,
+      scoreBefore: tailoredResumes.scoreBefore,
+      scoreAfter: tailoredResumes.scoreAfter,
+      report: tailoredResumes.report,
+      keywords: tailoredResumes.keywords,
+    })
+    .from(tailoredResumes)
+    .where(eq(tailoredResumes.jobId, jobId))
+    .orderBy(desc(tailoredResumes.id));
+}
+
+export async function getTailoredResume(id: number) {
+  const [row] = await db
+    .select({ content: tailoredResumes.content, title: jobs.title, company: companies.name })
+    .from(tailoredResumes)
+    .innerJoin(jobs, eq(jobs.id, tailoredResumes.jobId))
+    .innerJoin(companies, eq(companies.id, jobs.companyId))
+    .where(eq(tailoredResumes.id, id));
+  return row ?? null;
 }
 
 export async function getStats() {

@@ -145,6 +145,9 @@ export function JobCard({ job }: { job: JobItem }) {
         <Button variant="ghost" size="sm" onClick={() => act(() => markSeen([job.id]))}>
           Mark seen
         </Button>
+        <Button render={<Link href={`/jobs/${job.id}#resume`} />} nativeButton={false} variant="ghost" size="sm">
+          Tailor resume
+        </Button>
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}

@@ -141,3 +141,19 @@ def test_sync_copies_source_from_yaml(db_session, tmp_path):
     db_session.commit()
     company = db_session.scalar(select(Company))
     assert company.source_type == "manual" and company.health == "manual"
+
+
+def test_master_resume_validation():
+    from radar.resume import ResumeError, validate_master
+
+    good = {
+        "basics": {"name": "A", "email": "a@b.c"},
+        "skills": {"Core": ["Python"]},
+        "experience": [{"id": "x", "bullets": [{"id": "x1", "text": "Did a thing"}]}],
+        "projects": [{"id": "p", "bullets": [{"id": "p1", "text": "Built"}]}],
+    }
+    validate_master(good)
+    bad = {**good, "projects": [{"id": "p", "bullets": [{"id": "x1", "text": "dup"}, {"text": "no id"}]}]}
+    with pytest.raises(ResumeError) as e:
+        validate_master(bad)
+    assert "duplicate bullet id 'x1'" in str(e.value) and "needs an id and text" in str(e.value)

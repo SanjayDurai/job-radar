@@ -33,3 +33,6 @@ config/detect_report.json
 # deploy values for copy-paste into Vercel / GitHub (never commit)
 vercel.env
 github-secrets.env
+
+# your resume files (personal details) - never commit
+/resume/

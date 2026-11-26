@@ -62,6 +62,42 @@ Jobs asking 5+ years, senior titles and citizen-only roles are excluded automati
 
 ---
 
+## 2b. Tailored resumes (before you apply)
+
+On any job's page (or **Tailor resume** on a Today card), press **Tailor my resume**. In about 30 seconds you get:
+
+- **Score before → after**: your master resume vs the tailored one, for *this* job (target 75+).
+- **Keywords**: green = on your resume; amber = you have it but this version doesn't show it; grey = **gaps**, things the job wants that your master resume doesn't have. Gaps are never added.
+- **Checks**: one page, plain single-column layout, contact details, dates, and that the PDF's text is fully readable by software.
+- **What changed**: every rewritten line, before and after. **Read it before you send.**
+- **Download PDF / Word**. Upload the Word file when a site accepts it: ATS systems parse .docx most reliably.
+
+**How it stays honest.** The AI only *proposes* a rewrite. Plain code then checks every line against your master resume
+and keeps your original wording whenever a rewrite:
+- changes, adds or drops a number;
+- claims a skill you don't have;
+- drops a named technology;
+- borrows a skill from a different job or project;
+- changes your years of experience.
+
+**The score.** No ATS publishes its score, so this is Job Radar's own transparent one: 85% keyword coverage
+(must-have keywords count double) + 15% format checks. A low score usually means real gaps: the job wants a stack you
+don't have (e.g. Azure/C#), which is useful to know before applying.
+
+**Your master resume** is `resume/master.yaml` (git-ignored, it has your contact details). It's the *only* source the
+tailor uses, so put **more** true bullets, skills and projects in it than fit on one page: the tailor picks the most
+relevant ones per job. If a gap is actually true (say you do know Statistics), add it there. After editing, upload it to
+the live database (from `D:\job\fetcher`):
+
+```powershell
+$env:DATABASE_URL = (Select-String -Path ..\.env -Pattern '^NEON_DATABASE_URL=').Line.Split('=',2)[1]; python -m uv run radar resume-upload; Remove-Item Env:DATABASE_URL
+```
+
+Cost: 2–3 free Groq requests per tailored resume (1,000/day allowed). If you tailor several in a row and see
+"per-minute limit", wait a minute.
+
+---
+
 ## 3. Changing filters, weights and companies
 
 | What | Where | After editing |

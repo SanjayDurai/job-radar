@@ -6,17 +6,21 @@ import { Suspense } from "react";
 import { PriorityTag, WhyThisScore } from "@/components/job-card";
 import { ScoreDial } from "@/components/score-dial";
 import { StatusSelect } from "@/components/status";
+import { TailorPanel } from "@/components/tailor-panel";
 import { TrackerDetailsForm } from "@/components/tracker-details";
 import { Button } from "@/components/ui/button";
-import { getJob } from "@/lib/data";
+import { getJob, getResumeMaster, getTailoredResumes } from "@/lib/data";
 import { locationText, regionLabel, relativeDays, shortDate } from "@/lib/format";
 
 export const metadata = { title: "Job" };
+// "Tailor resume" makes 2-3 AI calls and renders a PDF: allow up to 2 minutes for this page's actions.
+export const maxDuration = 120;
 
 async function JobDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const job = Number.isFinite(Number(id)) ? await getJob(Number(id)) : null;
   if (!job) notFound();
+  const [versions, master] = await Promise.all([getTailoredResumes(job.id), getResumeMaster()]);
   return (
     <article className="max-w-3xl">
       <Link href="/jobs" className="text-sm text-muted-foreground hover:text-foreground">
@@ -71,7 +75,11 @@ async function JobDetail({ params }: { params: Promise<{ id: string }> }) {
         </label>
       </div>
 
-      <section className="mt-8 rounded-lg border bg-card p-4 sm:p-5">
+      <div className="mt-8">
+        <TailorPanel jobId={job.id} versions={versions} hasMaster={Boolean(master)} />
+      </div>
+
+      <section className="mt-6 rounded-lg border bg-card p-4 sm:p-5">
         <h2 className="mb-3 font-semibold">Tracking</h2>
         <TrackerDetailsForm jobId={job.id} notes={job.notes} appliedOn={job.appliedOn} />
       </section>

@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // PDF rendering libraries load fonts/native code at runtime: keep them out of the server bundle
+  serverExternalPackages: ["@react-pdf/renderer", "unpdf"],
   // Private dashboard: never indexed, never framed.
   async headers() {
     return [

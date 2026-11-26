@@ -9,6 +9,7 @@ import {
   jsonb,
   numeric,
   pgTable,
+  serial,
   smallint,
   text,
   timestamp,
@@ -123,6 +124,24 @@ export const runs = pgTable("runs", {
   llmCalls: integer("llm_calls").notNull(),
   error: text("error"),
   details: jsonb("details").$type<Record<string, unknown>>().notNull(),
+});
+
+export const appState = pgTable("app_state", {
+  key: varchar("key", { length: 80 }).primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: ts("updated_at").notNull().defaultNow(),
+});
+
+export const tailoredResumes = pgTable("tailored_resumes", {
+  id: serial("id").primaryKey(),
+  jobId: bigint("job_id", { mode: "number" }).notNull(),
+  createdAt: ts("created_at").notNull().defaultNow(),
+  model: varchar("model", { length: 80 }),
+  content: jsonb("content").$type<import("@/lib/resume/types").TailoredResume>().notNull(),
+  keywords: jsonb("keywords").$type<import("@/lib/resume/types").Keywords>().notNull(),
+  scoreBefore: smallint("score_before").notNull(),
+  scoreAfter: smallint("score_after").notNull(),
+  report: jsonb("report").$type<import("@/lib/resume/types").TailorReport>().notNull(),
 });
 
 export const companyRuns = pgTable("company_runs", {
